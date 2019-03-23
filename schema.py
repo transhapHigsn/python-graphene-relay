@@ -4,6 +4,7 @@ from models import Person as PersonModel
 from graphene.relay import Node, Connection
 from graphene_sqlalchemy import SQLAlchemyConnectionField, SQLAlchemyObjectType, utils
 
+from utils import create_person
 
 class Person(SQLAlchemyObjectType):
     class Meta:
@@ -32,17 +33,47 @@ class Query(ObjectType):
 class CreatePerson(Mutation):
     class Arguments:
         name = String()
+        age = Int()
 
     ok = Boolean()
     person = Field(lambda: Person)
 
-    def mutate(self, info, name):
-        person = Person(name=name)
-        ok = True
-        return CreatePerson(person=person, ok=ok)
+    def mutate(self, info, name, age):
+        person = create_person(name, age)
+        return CreatePerson(person=person, ok=True)
+
 
 class MyMutations(ObjectType):
     create_person = CreatePerson.Field()
 
 
 schema = Schema(query=Query, mutation=MyMutations, types=[Person])
+
+# get all rows from person table
+'''
+{
+    allPersons{
+        edges{
+            node{
+                id
+                name
+                age
+            }
+        }
+    }
+}
+'''
+
+# add new row in person table
+'''
+mutation mut{
+    createPerson(name: "Person Name", age: 11) {
+            person{
+                    id
+                    name
+                    age
+            }
+            ok
+    }
+} 
+'''

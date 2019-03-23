@@ -1,5 +1,4 @@
 from sqlalchemy import Column, Integer, String
-# from sqlalchemy.orm import backref, relationship
 
 from database import Base
 
