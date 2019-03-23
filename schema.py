@@ -1,5 +1,6 @@
 from graphene import ObjectType, Schema, String, ID, Int, Field, Mutation, Boolean, Argument
 from models import Person as PersonModel
+from models import Persons as PersonsModel
 
 from graphene.relay import Node, Connection
 from graphene_sqlalchemy import SQLAlchemyConnectionField, SQLAlchemyObjectType, utils
@@ -16,6 +17,16 @@ class PersonConnection(Connection):
     class Meta:
         node = Person
 
+class Persons(SQLAlchemyObjectType):
+    class Meta:
+        model = PersonsModel
+        interfaces = (Node, )
+
+
+class PersonsConnection(Connection):
+    class Meta:
+        node = Persons
+
 
 SortEnumPerson = utils.sort_enum_for_model(PersonModel, 'SortEnumPerson',
     lambda c, d: c.upper() + ('_ASC' if d else '_DESC'))
@@ -28,6 +39,7 @@ class Query(ObjectType):
         sort=Argument(
             SortEnumPerson,
             default_value=utils.EnumValue('id_asc', PersonModel.id.asc())))
+    all_next_person = SQLAlchemyConnectionField(PersonsConnection, sort=None)
 
 
 class CreatePerson(Mutation):

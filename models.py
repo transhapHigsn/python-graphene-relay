@@ -6,3 +6,9 @@ class Person(Base):
     id = Column(Integer, primary_key=True)
     name = Column(String, nullable=False)
     age = Column(Integer, nullable=False)
+
+class Persons(Base):
+    __tablename__ = 'persons'
+    id = Column(Integer, primary_key=True)
+    name = Column(String, nullable=False)
+    last = Column(String, nullable=False)
