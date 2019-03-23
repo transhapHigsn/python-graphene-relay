@@ -1,6 +1,7 @@
 from graphene import ObjectType, Schema, String, ID, Int, Field, Mutation, Boolean, Argument
 from models import Person as PersonModel
 from models import Persons as PersonsModel
+from models import Email as EmailModel
 
 from graphene.relay import Node, Connection
 from graphene_sqlalchemy import SQLAlchemyConnectionField, SQLAlchemyObjectType, utils
@@ -28,6 +29,17 @@ class PersonsConnection(Connection):
         node = Persons
 
 
+class Email(SQLAlchemyObjectType):
+    class Meta:
+        model = EmailModel
+        interfaces = (Node, )
+
+
+class EmailsConnection(Connection):
+    class Meta:
+        node = Email
+
+
 SortEnumPerson = utils.sort_enum_for_model(PersonModel, 'SortEnumPerson',
     lambda c, d: c.upper() + ('_ASC' if d else '_DESC'))
 
@@ -40,19 +52,22 @@ class Query(ObjectType):
             SortEnumPerson,
             default_value=utils.EnumValue('id_asc', PersonModel.id.asc())))
     all_next_person = SQLAlchemyConnectionField(PersonsConnection, sort=None)
+    all_email = SQLAlchemyConnectionField(EmailsConnection)
 
 
 class CreatePerson(Mutation):
     class Arguments:
         name = String()
         age = Int()
+        email = String()
 
     ok = Boolean()
     person = Field(lambda: Person)
+    email = String()
 
-    def mutate(self, info, name, age):
-        person = create_person(name, age)
-        return CreatePerson(person=person, ok=True)
+    def mutate(self, info, name, age, email):
+        person, ok, mail = create_person(name, age, email)
+        return CreatePerson(person=person, ok=ok, email=mail)
 
 
 class MyMutations(ObjectType):
