@@ -1,4 +1,4 @@
-from flask import Flask
+from flask import Flask, redirect
 from flask_graphql import GraphQLView
 
 from database import db_session
@@ -15,6 +15,10 @@ app.add_url_rule(
         graphiql=True # for having the GraphiQL interface
     )
 )
+
+@app.route('/')
+def index():
+    return redirect('/graphql')
 
 @app.teardown_appcontext
 def shutdown_session(exception=None):
