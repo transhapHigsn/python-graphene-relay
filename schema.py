@@ -62,12 +62,14 @@ class CreatePerson(Mutation):
         email = String()
 
     ok = Boolean()
-    person = Field(lambda: Person)
+    person = Field(lambda: Person if Person else {})
     email = String()
+    message = String()
 
     def mutate(self, info, name, age, email):
-        person, ok, mail = create_person(name, age, email)
-        return CreatePerson(person=person, ok=ok, email=mail)
+        response = create_person(name, age, email)
+        return CreatePerson(person=response['person'], ok=response['ok'], 
+            email=response['mail'], message=response['message'])
 
 
 class MyMutations(ObjectType):
