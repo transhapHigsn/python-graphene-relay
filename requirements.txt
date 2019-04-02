@@ -11,7 +11,7 @@ itsdangerous==1.1.0
 Jinja2==2.10
 MarkupSafe==1.1.1
 promise==2.2.1
-psycopg2==2.7.7
+# psycopg2==2.7.7
 psycopg2-binary==2.7.7
 Rx==1.6.1
 singledispatch==3.4.0.3
